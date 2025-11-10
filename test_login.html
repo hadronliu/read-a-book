@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录测试</title>
+</head>
+<body>
+    <h1>登录测试页面</h1>
+
+    <div>
+        <h2>注册新用户</h2>
+        <input type="text" id="regUsername" placeholder="用户名" value="testuser3">
+        <input type="password" id="regPassword" placeholder="密码" value="123456">
+        <input type="email" id="regEmail" placeholder="邮箱" value="test3@example.com">
+        <button onclick="testRegister()">注册</button>
+        <div id="regMessage"></div>
+    </div>
+
+    <div>
+        <h2>登录测试</h2>
+        <input type="text" id="loginUsername" placeholder="用户名" value="testuser2">
+        <input type="password" id="loginPassword" placeholder="密码" value="123456">
+        <button onclick="testLogin()">登录</button>
+        <div id="loginMessage"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        async function testRegister() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+                document.getElementById('regMessage').innerHTML =
+                    response.ok ? `✅ 注册成功: ${JSON.stringify(data)}` : `❌ 注册失败: ${JSON.stringify(data)}`;
+            } catch (error) {
+                document.getElementById('regMessage').innerHTML = `❌ 网络错误: ${error.message}`;
+            }
+        }
+
+        async function testLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                document.getElementById('loginMessage').innerHTML =
+                    response.ok ? `✅ 登录成功: ${JSON.stringify(data)}` : `❌ 登录失败: ${JSON.stringify(data)}`;
+            } catch (error) {
+                document.getElementById('loginMessage').innerHTML = `❌ 网络错误: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

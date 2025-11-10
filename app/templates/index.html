@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机阅读电子书应用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #495057;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            color: #343a40;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff9800;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            min-width: 120px;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            min-width: 140px;
+            max-width: 200px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-group-2 .btn {
+            flex: 1;
+            min-width: 100px;
+            max-width: 150px;
+            height: 40px;
+            font-size: 0.9em;
+            padding: 8px 12px;
+        }
+
+        .btn-group-full .btn {
+            flex: 1;
+            min-width: 0;
+            max-width: none;
+            height: 42px;
+            font-size: 0.85em;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        .book-card-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .book-card-buttons .btn {
+            flex: 1;
+            height: 36px;
+            font-size: 0.85em;
+            padding: 6px 8px;
+            min-width: 0;
+            white-space: nowrap;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #a5d8ff 0%, #74c0fc 100%);
+            color: #1c7ed6;
+            border: 1px solid #a5d8ff;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #74c0fc 0%, #4dabf7 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ffc9c9 0%, #ffa8a8 100%);
+            color: #c92a2a;
+            border: 1px solid #ffc9c9;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #ffa8a8 0%, #ff8787 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+        }
+
+        .btn-pause {
+            background: linear-gradient(135deg, #ffc9c9 0%, #ffa8a8 100%);
+            color: #c92a2a;
+            border: 1px solid #ffc9c9;
+        }
+
+        .btn-pause:hover {
+            background: linear-gradient(135deg, #ffa8a8 0%, #ff8787 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4dabf7 0%, #2196f3 100%);
+            color: white;
+            border: 1px solid #2196f3;
+        }
+
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        
+        .main-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .book-card {
+            margin-bottom: 30px;
+            padding: 15px;
+        }
+
+        .book-card-container {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-cover {
+            width: 200px;
+            height: 280px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .book-cover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        #manageBooksSection {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        #manageBooksSection h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        #manageBooksSection h3 {
+            color: #555;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        #manageBooksSection .form-group {
+            margin-bottom: 20px;
+        }
+
+        #manageBooksSection .form-group label {
+            color: #333;
+            font-weight: 500;
+        }
+
+        #manageBooksSection textarea {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s;
+        }
+
+        #manageBooksSection textarea:focus {
+            border-color: #ff9800;
+            outline: none;
+        }
+
+        #booksContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 768px) {
+            #booksContainer {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #booksContainer {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .book-description {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .timer {
+            font-size: 2.5em;
+            color: #ff9800;
+            font-weight: 700;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-label {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .color-gradient {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .color-light {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .color-medium {
+            background: #ffe0b2;
+            color: #f57c00;
+        }
+
+        .color-dark {
+            background: #ffb74d;
+            color: #e65100;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff9800;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            color: #ff9800;
+            border-bottom-color: #ff9800;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .main-section {
+                padding: 20px;
+            }
+
+            .book-cover {
+                width: 150px;
+                height: 210px;
+            }
+
+            .book-title {
+                font-size: 1.3em;
+            }
+
+            .timer {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 阅读一本书</h1>
+            <p>让我们随机选择一本书，开始阅读吧</p>
+        </div>
+
+        <div id="authSection" class="auth-section">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('login')">登录</button>
+                <button class="nav-tab" onclick="switchTab('register')">注册</button>
+            </div>
+
+            <div id="loginTab" class="tab-content active">
+                <div class="form-group">
+                    <label for="loginUsername">用户名</label>
+                    <input type="text" id="loginUsername" placeholder="输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" id="loginPassword" placeholder="输入密码">
+                </div>
+                <button class="btn btn-primary btn-full" onclick="login()">登录</button>
+            </div>
+
+            <div id="registerTab" class="tab-content">
+                <div class="form-group">
+                    <label for="regUsername">用户名</label>
+                    <input type="text" id="regUsername" placeholder="输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">邮箱</label>
+                    <input type="email" id="regEmail" placeholder="输入邮箱（可选）">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">密码</label>
+                    <input type="password" id="regPassword" placeholder="输入密码">
+                </div>
+                <button class="btn btn-primary btn-full" onclick="register()">注册</button>
+            </div>
+        </div>
+
+        <div id="mainSection" class="main-section hidden">
+            <div id="messageArea"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="selectBookBtn" onclick="selectRandomBook()">
+                    📖 阅读一本书
+                </button>
+                <button class="btn btn-secondary" onclick="showManageBooks()">
+                    📚 管理我的书籍
+                </button>
+            </div>
+
+            <div id="bookSection" class="hidden">
+                <div class="book-card">
+                    <div class="book-cover" id="bookCover">
+                        <img id="bookCoverImg" src="" alt="书籍封面">
+                    </div>
+                    <div class="book-title" id="displayBookTitle">书籍名称</div>
+                    <div class="book-description" id="displayBookDescription"></div>
+                </div>
+
+                <div id="readingSection" class="hidden">
+                    <div class="timer-label" id="timerLabel">阅读时长</div>
+                    <div class="timer" id="timer">0 分钟</div>
+                    <div id="colorIndicator" class="color-gradient color-light">轻松阅读</div>
+                    <div class="btn-group btn-group-full">
+                        <button class="btn btn-primary btn-small" id="stopBtn" onclick="pauseReading()">⏹️ 暂停阅读</button>
+                        <button class="btn btn-secondary btn-small" onclick="selectRandomBook()">🔄 换一本书</button>
+                        <button class="btn btn-secondary btn-small" onclick="backToMainFromReading()">🏠 返回主页</button>
+                    </div>
+                </div>
+
+                <div id="selectSection" class="btn-group btn-group-full">
+                    <button class="btn btn-primary btn-small" onclick="startReading()">▶️ 开始阅读</button>
+                    <button class="btn btn-secondary btn-small" onclick="selectRandomBook()">🔄 换一本书</button>
+                    <button class="btn btn-secondary btn-small" onclick="backToMainFromReading()">🏠 返回主页</button>
+                </div>
+            </div>
+
+            <!-- 书籍管理界面 -->
+            <div id="manageBooksSection" class="hidden">
+                <h2 style="margin-bottom: 30px; color: #333;">📚 管理我的书籍</h2>
+
+            
+                <!-- 添加/编辑书籍表单 -->
+                <div id="bookForm" style="background: rgba(248, 249, 250, 0.95); backdrop-filter: blur(5px); padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(222, 226, 230, 0.8);">
+                    <h3 id="formTitle" style="margin-bottom: 25px; color: #495057; font-weight: 600;">➕ 添加新书籍</h3>
+                    <div class="form-group">
+                        <label for="bookTitle">书名 *</label>
+                        <input type="text" id="bookTitle" placeholder="输入书名">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookDescription">描述</label>
+                        <textarea id="bookDescription" placeholder="输入书籍描述（可选）"
+                                  style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;
+                                         font-size: 1em; min-height: 80px; resize: vertical;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookCoverFile">封面图片</label>
+                        <input type="file" id="bookCoverFile" accept="image/*" onchange="previewCover(event)">
+                        <div id="coverPreview" style="margin-top: 10px;"></div>
+                    </div>
+                    <div class="btn-group btn-group-full">
+                        <button class="btn btn-primary" id="submitBookBtn" onclick="addBook()">➕ 添加书籍</button>
+                        <button class="btn btn-secondary" onclick="cancelBookForm()">❌ 取消</button>
+                    </div>
+                </div>
+
+                <!-- 书籍列表 -->
+                <div id="myBooksList">
+                    <h3 style="margin-bottom: 20px; color: #555;">我的书籍列表</h3>
+                    <div id="booksContainer">
+                        <!-- 书籍卡片将在这里动态生成 -->
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="backToMain()">🏠 返回主页</button>
+                    <button class="btn btn-secondary" onclick="logout()">🚪 退出登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let token = localStorage.getItem('token');
+        let currentBook = null;
+        let currentSession = null;
+        let timerInterval = null;
+        let startTime = null;
+        let editingBookId = null; // 当前编辑的书籍ID
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 重新从localStorage加载token
+            token = localStorage.getItem('token');
+            console.log('页面加载完成，当前token:', token);
+
+            if (token) {
+                console.log('用户已登录，显示主界面');
+                showMainSection();
+            } else {
+                console.log('用户未登录，显示登录界面');
+            }
+        });
+
+        // 标签页切换
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // 注册
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            if (!username || !password) {
+                showMessage('用户名和密码不能为空', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                if (response.ok) {
+                    showMessage('注册成功，请登录', 'success');
+                    switchTab('login');
+                } else {
+                    const data = await response.json();
+                    showMessage(data.detail || '注册失败', 'error');
+                }
+            } catch (error) {
+                showMessage('网络错误：' + error.message, 'error');
+            }
+        }
+
+        // 登录
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showMessage('用户名和密码不能为空', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    token = data.access_token;
+                    localStorage.setItem('token', token);
+                    console.log('登录成功，token已保存:', token.substring(0, 20) + '...');
+                    showMainSection();
+                } else {
+                    showMessage('用户名或密码错误', 'error');
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                showMessage('网络错误：' + error.message, 'error');
+            }
+        }
+
+        // 显示书籍管理界面
+        function showManageBooks() {
+            document.getElementById('bookSection').classList.add('hidden');
+            document.getElementById('manageBooksSection').classList.remove('hidden');
+
+            // 重置表单状态
+            clearBookForm();
+
+            loadMyBooks();
+        }
+
+        // 返回主界面
+        function backToMain() {
+            document.getElementById('manageBooksSection').classList.add('hidden');
+            document.getElementById('bookSection').classList.add('hidden');
+
+            // 确保顶部按钮组显示
+            const mainButtons = document.querySelector('#mainSection > .btn-group');
+            if (mainButtons) {
+                mainButtons.style.display = 'flex';
+            }
+        }
+
+        // 预览封面
+        function previewCover(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('coverPreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="封面预览"
+                             style="max-width: 200px; max-height: 280px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        // 添加或更新书籍
+        async function addBook() {
+            console.log('=== 开始' + (editingBookId ? '编辑' : '添加') + '书籍 ===');
+
+            // 获取当前token
+            const currentToken = localStorage.getItem('token');
+            console.log('重新获取的token:', currentToken);
+
+            // 获取表单数据
+            const title = document.getElementById('bookTitle').value.trim();
+            const description = document.getElementById('bookDescription').value.trim();
+            const coverFile = document.getElementById('bookCoverFile').files[0];
+
+            console.log('输入数据:', { title, description, coverFile: coverFile?.name, editingBookId });
+
+            if (!title) {
+                console.log('❌ 书名为空，停止执行');
+                showMessage('请输入书名', 'error');
+                return;
+            }
+
+            if (!currentToken) {
+                console.log('❌ 没有token，停止执行');
+                showMessage('请先登录', 'error');
+                return;
+            }
+
+            console.log('✅ 验证通过，开始发送API请求');
+
+            try {
+                let bookResponse;
+                let bookData = { title, description };
+
+                if (editingBookId) {
+                    // 编辑现有书籍
+                    console.log('发送PUT请求到:', `${API_BASE}/books/${editingBookId}`);
+                    bookResponse = await fetch(`${API_BASE}/books/${editingBookId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentToken}`
+                        },
+                        body: JSON.stringify(bookData)
+                    });
+                } else {
+                    // 创建新书籍
+                    console.log('发送POST请求到:', `${API_BASE}/books`);
+                    bookResponse = await fetch(`${API_BASE}/books`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentToken}`
+                        },
+                        body: JSON.stringify(bookData)
+                    });
+                }
+
+                console.log('书籍' + (editingBookId ? '更新' : '创建') + '响应状态:', bookResponse.status);
+
+                if (!bookResponse.ok) {
+                    const errorText = await bookResponse.text();
+                    console.error((editingBookId ? '更新' : '创建') + '书籍失败响应:', errorText);
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        showMessage(errorData.detail || (editingBookId ? '更新书籍失败' : '添加书籍失败'), 'error');
+                    } catch {
+                        showMessage((editingBookId ? '更新' : '添加') + '书籍失败：服务器错误', 'error');
+                    }
+                    return;
+                }
+
+                const book = await bookResponse.json();
+                console.log('书籍' + (editingBookId ? '更新' : '创建') + '成功:', book);
+
+                // 如果有封面图片，上传封面
+                if (coverFile) {
+                    console.log('开始上传封面...');
+                    const formData = new FormData();
+                    formData.append('file', coverFile);
+
+                    const uploadResponse = await fetch(`${API_BASE}/books/${book.id}/upload-cover`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${currentToken}`
+                        },
+                        body: formData
+                    });
+
+                    if (uploadResponse.ok) {
+                        const updatedBook = await uploadResponse.json();
+                        // 更新本地书籍信息
+                        Object.assign(book, updatedBook);
+                        console.log('封面上传成功:', updatedBook);
+                    } else {
+                        console.log('封面上传失败，但书籍已' + (editingBookId ? '更新' : '创建'));
+                    }
+                }
+
+                showMessage('书籍' + (editingBookId ? '更新' : '添加') + '成功！', 'success');
+                cancelBookForm();
+                loadMyBooks(); // 重新加载书籍列表
+
+            } catch (error) {
+                console.error((editingBookId ? '更新' : '添加') + '书籍异常:', error);
+                showMessage((editingBookId ? '更新' : '添加') + '书籍失败：' + error.message, 'error');
+            }
+            console.log('=== ' + (editingBookId ? '编辑' : '添加') + '书籍结束 ===');
+        }
+
+        // 取消书籍表单
+        function cancelBookForm() {
+            clearBookForm();
+        }
+
+        // 清空书籍表单
+        function clearBookForm() {
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookDescription').value = '';
+            document.getElementById('bookCoverFile').value = '';
+            document.getElementById('coverPreview').innerHTML = '';
+            editingBookId = null;
+
+            // 重置表单为添加模式
+            document.getElementById('formTitle').textContent = '添加新书籍';
+            document.getElementById('submitBookBtn').textContent = '添加书籍';
+        }
+
+        // 编辑书籍
+        async function editBook(bookId) {
+            console.log('=== 开始编辑书籍 ===');
+            console.log('书籍ID:', bookId);
+            console.log('editBook函数被调用，参数:', arguments);
+
+            // 确保bookId是数字
+            const bookIdNum = parseInt(bookId);
+            console.log('转换后的书籍ID:', bookIdNum);
+
+            const currentToken = localStorage.getItem('token');
+            console.log('当前token:', currentToken);
+
+            if (!currentToken) {
+                console.error('没有token，请先登录');
+                showMessage('请先登录', 'error');
+                return;
+            }
+
+            try {
+                console.log('开始获取书籍详情，URL:', `${API_BASE}/books/${bookIdNum}`);
+
+                // 获取书籍详情
+                const response = await fetch(`${API_BASE}/books/${bookIdNum}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                console.log('获取书籍详情响应状态:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('获取书籍详情失败:', errorText);
+                    showMessage('获取书籍详情失败', 'error');
+                    return;
+                }
+
+                const book = await response.json();
+                console.log('书籍详情:', book);
+
+                // 验证表单元素是否存在
+                const titleInput = document.getElementById('bookTitle');
+                const descInput = document.getElementById('bookDescription');
+                const formTitle = document.getElementById('formTitle');
+                const submitBtn = document.getElementById('submitBookBtn');
+
+                console.log('表单元素检查:', {
+                    titleInput: !!titleInput,
+                    descInput: !!descInput,
+                    formTitle: !!formTitle,
+                    submitBtn: !!submitBtn
+                });
+
+                if (!titleInput || !formTitle || !submitBtn) {
+                    console.error('表单元素不存在');
+                    showMessage('表单加载失败', 'error');
+                    return;
+                }
+
+                // 填充表单
+                titleInput.value = book.title;
+                descInput.value = book.description || '';
+                document.getElementById('coverPreview').innerHTML = '';
+
+                console.log('表单数据已填充:', {
+                    title: book.title,
+                    description: book.description
+                });
+
+                // 如果有封面，显示封面
+                if (book.cover_url) {
+                    document.getElementById('coverPreview').innerHTML = `
+                        <img src="${book.cover_url}" alt="当前封面"
+                             style="max-width: 200px; max-height: 280px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <p style="margin-top: 5px; font-size: 0.9em; color: #666;">当前封面（上传新图片将替换）</p>
+                    `;
+                }
+
+                // 设置编辑模式
+                editingBookId = bookIdNum;
+                formTitle.textContent = '编辑书籍';
+                submitBtn.textContent = '更新书籍';
+
+                console.log('编辑模式已设置，editingBookId:', editingBookId);
+
+                // 滚动到表单
+                console.log('滚动到表单位置');
+                document.getElementById('bookForm').scrollIntoView({ behavior: 'smooth' });
+
+                console.log('编辑书籍初始化完成');
+
+            } catch (error) {
+                console.error('编辑书籍异常:', error);
+                showMessage('编辑书籍失败：' + error.message, 'error');
+            }
+            console.log('=== 编辑书籍结束 ===');
+        }
+
+        // 加载我的书籍列表
+        async function loadMyBooks() {
+            console.log('=== 开始加载书籍列表 ===');
+
+            // 获取当前token
+            const currentToken = localStorage.getItem('token');
+            console.log('重新获取的token:', currentToken);
+
+            if (!currentToken) {
+                console.error('没有token，请先登录');
+                showMessage('请先登录', 'error');
+                return;
+            }
+
+            try {
+                console.log('发送请求到:', `${API_BASE}/books`);
+
+                const response = await fetch(`${API_BASE}/books`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                console.log('加载书籍响应状态:', response.status);
+
+                if (response.ok) {
+                    const books = await response.json();
+                    console.log('书籍列表加载成功:', books);
+                    displayBooks(books);
+                } else {
+                    const errorText = await response.text();
+                    console.error('加载书籍失败响应:', errorText);
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        showMessage(errorData.detail || '加载书籍列表失败', 'error');
+                    } catch {
+                        showMessage('加载书籍列表失败：服务器错误', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('加载书籍异常:', error);
+                showMessage('加载书籍列表失败：' + error.message, 'error');
+            }
+            console.log('=== 加载书籍列表结束 ===');
+        }
+
+        // 显示书籍列表
+        function displayBooks(books) {
+            console.log('=== 开始显示书籍列表 ===');
+            console.log('书籍数据:', books);
+
+            const container = document.getElementById('booksContainer');
+
+            if (books.length === 0) {
+                console.log('没有书籍，显示空状态');
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;"><p>还没有添加任何书籍</p><p style="font-size: 0.9em; margin-top: 10px;">点击上方表单添加你的第一本书</p></div>';
+                return;
+            }
+
+            let booksHTML = '';
+            books.forEach(book => {
+                console.log('处理书籍:', book);
+
+                const coverHTML = book.cover_url ?
+                    `<img src="${book.cover_url}" alt="${book.title}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                    '<span style="color: #999; font-size: 0.8em;">📚 无封面</span>';
+
+                const descriptionHTML = book.description ?
+                    `<div class="book-description" style="color: #666; font-size: 0.85em; line-height: 1.4; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${book.description}</div>` :
+                    '';
+
+                console.log('创建书籍卡片HTML，ID:', book.id);
+
+                booksHTML += `
+                    <div class="book-card-container">
+                        <div class="book-cover" style="width: 100%; height: 200px; margin-bottom: 10px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            ${coverHTML}
+                        </div>
+                        <div class="book-title" style="font-size: 1.1em; font-weight: 600; color: #333; margin-bottom: 8px; line-height: 1.3;">${book.title}</div>
+                        ${descriptionHTML}
+                        <div class="book-card-buttons">
+                            <button class="btn btn-primary" onclick="readBookFromManage(${book.id})">📖 阅读</button>
+                            <button class="btn btn-edit" onclick="editBook(${book.id})">✏️ 编辑</button>
+                            <button class="btn btn-delete" onclick="deleteBook(${book.id})">🗑️ 删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            console.log('设置容器innerHTML');
+            container.innerHTML = booksHTML;
+            console.log('书籍列表显示完成，总共', books.length, '本书');
+            console.log('=== 显示书籍列表结束 ===');
+        }
+
+        // 删除书籍
+        async function deleteBook(bookId) {
+            if (!confirm('确定要删除这本书吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/books/${bookId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    showMessage('书籍删除成功', 'success');
+                    loadMyBooks(); // 重新加载书籍列表
+                } else {
+                    const errorData = await response.json();
+                    showMessage(errorData.detail || '删除书籍失败', 'error');
+                }
+            } catch (error) {
+                showMessage('删除书籍失败：' + error.message, 'error');
+            }
+        }
+
+        // 从管理页面阅读书籍
+        async function readBookFromManage(bookId) {
+            try {
+                const response = await fetch(`${API_BASE}/books/${bookId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    currentBook = await response.json();
+                    displayBook();
+
+                    // 完全隐藏管理页面
+                    document.getElementById('manageBooksSection').classList.add('hidden');
+
+                    // 显示主页部分，但隐藏顶部按钮组
+                    document.getElementById('mainSection').classList.remove('hidden');
+                    const mainButtons = document.querySelector('#mainSection > .btn-group');
+                    if (mainButtons) {
+                        mainButtons.style.display = 'none';
+                    }
+
+                    // 只显示阅读界面
+                    document.getElementById('bookSection').classList.remove('hidden');
+                    document.getElementById('selectSection').classList.remove('hidden');
+                    document.getElementById('readingSection').classList.add('hidden');
+
+                    // 停止任何正在进行的计时
+                    pauseReading();
+                } else {
+                    showMessage('获取书籍失败', 'error');
+                }
+            } catch (error) {
+                showMessage('获取书籍失败：' + error.message, 'error');
+            }
+        }
+
+        // 从阅读界面返回主页
+        function backToMainFromReading() {
+            // 停止计时
+            pauseReading();
+
+            // 隐藏阅读界面
+            document.getElementById('bookSection').classList.add('hidden');
+
+            // 显示主页（包括顶部按钮组）
+            showMainSection();
+        }
+
+        // 退出登录
+        function logout() {
+            token = null;
+            localStorage.removeItem('token');
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('mainSection').classList.add('hidden');
+            document.getElementById('manageBooksSection').classList.add('hidden');
+            document.getElementById('messageArea').innerHTML = '';
+        }
+
+        
+        // 显示主界面
+        function showMainSection() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+
+            // 确保顶部按钮组显示
+            const mainButtons = document.querySelector('#mainSection > .btn-group');
+            if (mainButtons) {
+                mainButtons.style.display = 'flex';
+            }
+        }
+
+        // 显示消息
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+
+        // 获取随机书籍
+        async function selectRandomBook() {
+            try {
+                const response = await fetch(`${API_BASE}/books/random`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    currentBook = await response.json();
+                    displayBook();
+                    document.getElementById('bookSection').classList.remove('hidden');
+                    document.getElementById('selectSection').classList.remove('hidden');
+                    document.getElementById('readingSection').classList.add('hidden');
+                    pauseReading();
+                } else {
+                    showMessage('没有找到书籍，请先添加书籍', 'error');
+                }
+            } catch (error) {
+                showMessage('获取书籍失败：' + error.message, 'error');
+            }
+        }
+
+        // 显示书籍
+        function displayBook() {
+            document.getElementById('displayBookTitle').textContent = currentBook.title;
+            document.getElementById('displayBookDescription').textContent = currentBook.description || '暂无描述';
+            
+            const coverImg = document.getElementById('bookCoverImg');
+            if (currentBook.cover_url) {
+                coverImg.src = currentBook.cover_url;
+                coverImg.style.display = 'block';
+            } else {
+                coverImg.style.display = 'none';
+            }
+        }
+
+        // 开始阅读
+        async function startReading() {
+            try {
+                const response = await fetch(`${API_BASE}/reading-sessions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ book_id: currentBook.id })
+                });
+
+                if (response.ok) {
+                    currentSession = await response.json();
+                    startTime = new Date();
+
+                    document.getElementById('selectSection').classList.add('hidden');
+                    document.getElementById('readingSection').classList.remove('hidden');
+
+                    // 显示"阅读计时"
+                    document.getElementById('timerLabel').textContent = '阅读计时';
+                    document.getElementById('timer').style.color = '#ff9800'; // 橙色
+
+                    // 改变按钮为"暂停阅读"
+                    document.getElementById('stopBtn').textContent = '⏸️ 暂停阅读';
+                    document.getElementById('stopBtn').className = 'btn btn-pause';
+                    document.getElementById('stopBtn').onclick = pauseReading;
+
+                    // 启动计时器
+                    timerInterval = setInterval(updateTimer, 1000);
+                } else {
+                    showMessage('开始阅读失败', 'error');
+                }
+            } catch (error) {
+                showMessage('网络错误：' + error.message, 'error');
+            }
+        }
+
+        // 更新计时器
+        function updateTimer() {
+            if (!startTime) return;
+            
+            const elapsed = Math.floor((new Date() - startTime) / 60000);
+            const minutes = elapsed;
+            const hours = Math.floor(minutes / 60);
+            
+            let timeText = '';
+            if (hours > 0) {
+                timeText = `${hours} 小时 ${minutes % 60} 分钟`;
+            } else {
+                timeText = `${minutes} 分钟`;
+            }
+            
+            document.getElementById('timer').textContent = timeText;
+
+            // 更新颜色指示
+            let indicator = '轻松阅读';
+            let colorClass = 'color-light';
+            
+            if (minutes >= 30) {
+                indicator = '深度阅读';
+                colorClass = 'color-dark';
+            } else if (minutes >= 10) {
+                indicator = '持续阅读';
+                colorClass = 'color-medium';
+            }
+            
+            const colorDiv = document.getElementById('colorIndicator');
+            colorDiv.textContent = indicator;
+            colorDiv.className = 'color-gradient ' + colorClass;
+        }
+
+        // 暂停阅读
+        async function pauseReading() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            if (currentSession && startTime) {
+                const elapsed = Math.floor((new Date() - startTime) / 60000);
+
+                try {
+                    await fetch(`${API_BASE}/reading-sessions/${currentSession.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ total_minutes: elapsed })
+                    });
+                } catch (error) {
+                    console.error('保存阅读记录失败：', error);
+                }
+            }
+
+            // 修改显示状态
+            document.getElementById('timerLabel').textContent = '阅读时长';
+            document.getElementById('timer').style.color = '#2196f3'; // 蓝色
+
+            // 改变按钮为"继续阅读"
+            document.getElementById('stopBtn').textContent = '▶️ 继续阅读';
+            document.getElementById('stopBtn').className = 'btn btn-primary';
+            document.getElementById('stopBtn').onclick = continueReading;
+
+            // 保留计时显示，不清零
+            startTime = null;
+            currentSession = null;
+        }
+
+        // 继续阅读
+        async function continueReading() {
+            try {
+                const response = await fetch(`${API_BASE}/reading-sessions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ book_id: currentBook.id })
+                });
+
+                if (response.ok) {
+                    currentSession = await response.json();
+                    startTime = new Date();
+
+                    // 显示"阅读计时"
+                    document.getElementById('timerLabel').textContent = '阅读计时';
+                    document.getElementById('timer').style.color = '#ff9800'; // 橙色
+
+                    // 改变按钮为"暂停阅读"
+                    document.getElementById('stopBtn').textContent = '⏸️ 暂停阅读';
+                    document.getElementById('stopBtn').className = 'btn btn-pause';
+                    document.getElementById('stopBtn').onclick = pauseReading;
+
+                    // 重新启动计时器（从当前显示的时间开始）
+                    const currentTimerText = document.getElementById('timer').textContent;
+                    const currentMinutes = parseInt(currentTimerText) || 0;
+                    startTime = new Date(Date.now() - currentMinutes * 60000);
+
+                    // 启动计时器
+                    timerInterval = setInterval(updateTimer, 1000);
+                } else {
+                    showMessage('继续阅读失败', 'error');
+                }
+            } catch (error) {
+                showMessage('网络错误：' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
